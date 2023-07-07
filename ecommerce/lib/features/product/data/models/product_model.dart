@@ -31,6 +31,10 @@ class ProductModel extends ProductEntity {
   }
 
   Map<String, dynamic> toMap() {
+    RatingModel ratingModel = RatingModel(
+      rate: rating.rate,
+      count: rating.count,
+    );
     return {
       'id': id,
       'title': title,
@@ -38,8 +42,12 @@ class ProductModel extends ProductEntity {
       'description': description,
       'category': category,
       'image': image,
-      'rating': rating,
+      'rating': ratingModel.toMap(),
     };
+  }
+
+  String toJson() {
+    return jsonEncode(toMap());
   }
 
   static List<ProductModel> generateProductList(List<dynamic> datas) {

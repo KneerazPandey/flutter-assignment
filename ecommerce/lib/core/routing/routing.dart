@@ -1,3 +1,4 @@
+import 'package:ecommerce/features/cart/presentation/screens/cart_screen.dart';
 import 'package:ecommerce/features/product/presentation/screens/product_detail_screen.dart';
 import 'package:ecommerce/home_screen.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,11 @@ class Routing {
         return MaterialPageRoute(
           settings: routeSettings,
           builder: (BuildContext context) => const ProductDetailScreen(),
+        );
+      case CartScreen.routeName:
+        return MaterialPageRoute(
+          settings: routeSettings,
+          builder: (BuildContext context) => const CartScreen(),
         );
       default:
         return MaterialPageRoute(

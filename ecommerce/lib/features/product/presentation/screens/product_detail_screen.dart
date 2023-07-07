@@ -1,3 +1,4 @@
+import 'package:ecommerce/features/product/presentation/widgets/product_detail_body.dart';
 import 'package:flutter/material.dart';
 
 class ProductDetailScreen extends StatelessWidget {
@@ -7,6 +8,15 @@ class ProductDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    Map<String, dynamic> data =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+
+    return Scaffold(
+      body: SafeArea(
+        child: ProductDetailBody(
+          id: (data['id'] as num).toInt(),
+        ),
+      ),
+    );
   }
 }

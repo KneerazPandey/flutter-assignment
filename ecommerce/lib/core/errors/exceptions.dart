@@ -21,3 +21,11 @@ class ServerException implements Exception {
 
   String get message => _message;
 }
+
+class CacheException implements Exception {
+  final String _message;
+
+  const CacheException(this._message);
+
+  String get message => _message;
+}

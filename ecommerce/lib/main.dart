@@ -1,6 +1,7 @@
 import 'package:ecommerce/core/constants/app_theme.dart';
 import 'package:ecommerce/core/routing/routing.dart';
 import 'package:ecommerce/dependency_injection.dart' as di;
+import 'package:ecommerce/features/cart/presentation/bloc/bloc.dart';
 import 'package:ecommerce/features/product/presentation/bloc/product_bloc.dart';
 import 'package:ecommerce/home_screen.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,15 @@ class MyApp extends StatelessWidget {
           create: (BuildContext context) => ProductBloc(
             getAllProducts: di.sl(),
             getProductDetail: di.sl(),
+          ),
+        ),
+        BlocProvider<CartBloc>(
+          create: (BuildContext context) => CartBloc(
+            getAllCart: di.sl(),
+            addToCart: di.sl(),
+            decreaseCartProductItem: di.sl(),
+            increaseCartProductItem: di.sl(),
+            removeCartProduct: di.sl(),
           ),
         ),
       ],

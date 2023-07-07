@@ -38,3 +38,10 @@ class ServerFailure extends Failure {
   @override
   List<Object?> get props => [message];
 }
+
+class CacheFailure extends Failure {
+  const CacheFailure(super.message);
+
+  @override
+  List<Object?> get props => [message];
+}

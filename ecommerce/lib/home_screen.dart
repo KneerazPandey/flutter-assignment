@@ -1,12 +1,16 @@
 import 'dart:async';
 
+import 'package:ecommerce/features/cart/presentation/screens/cart_screen.dart';
 import 'package:ecommerce/features/product/domain/entities/product_entity.dart';
 import 'package:ecommerce/features/product/presentation/bloc/product_bloc.dart';
 import 'package:ecommerce/features/product/presentation/bloc/product_event.dart';
 import 'package:ecommerce/features/product/presentation/bloc/product_state.dart';
+import 'package:ecommerce/features/product/presentation/screens/product_detail_screen.dart';
 import 'package:ecommerce/widgets/product_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:lottie/lottie.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String routeName = '/home';
@@ -56,68 +60,90 @@ class _HomeScreenState extends State<HomeScreen> {
                   return SafeArea(
                     child: Column(
                       children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 18),
-                          child: TextField(
-                            controller: searchController,
-                            onChanged: (String value) {
-                              if (_searchingTimer?.isActive ?? false) {
-                                _searchingTimer?.cancel();
-                              }
-                              _searchingTimer =
-                                  Timer(const Duration(milliseconds: 800), () {
-                                if (searchController.text.isNotEmpty) {
-                                  List<ProductEntity> results = [];
-                                  if (value.isEmpty) {
-                                    results = state.products;
-                                  } else {
-                                    results = state.products.where(
-                                      (product) {
-                                        return product.title
-                                                .toLowerCase()
-                                                .contains(
-                                                  value.toLowerCase(),
-                                                ) ||
-                                            product.category
-                                                .toLowerCase()
-                                                .contains(
-                                                  value.toLowerCase(),
-                                                );
-                                      },
-                                    ).toList();
-                                  }
-                                  setState(() {
-                                    _products = results;
-                                  });
-                                }
-                              });
-                            },
-                            onSubmitted: (String value) {},
-                            decoration: InputDecoration(
-                              hintText: 'Search',
-                              hintStyle: Theme.of(context)
-                                  .textTheme
-                                  .titleLarge!
-                                  .copyWith(
-                                    fontSize: 17,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 18),
+                                child: TextField(
+                                  controller: searchController,
+                                  onChanged: (String value) {
+                                    if (_searchingTimer?.isActive ?? false) {
+                                      _searchingTimer?.cancel();
+                                    }
+                                    _searchingTimer = Timer(
+                                        const Duration(milliseconds: 800), () {
+                                      if (searchController.text.isNotEmpty) {
+                                        List<ProductEntity> results = [];
+                                        if (value.isEmpty) {
+                                          results = state.products;
+                                        } else {
+                                          results = state.products.where(
+                                            (product) {
+                                              return product.title
+                                                      .toLowerCase()
+                                                      .contains(
+                                                        value.toLowerCase(),
+                                                      ) ||
+                                                  product.category
+                                                      .toLowerCase()
+                                                      .contains(
+                                                        value.toLowerCase(),
+                                                      );
+                                            },
+                                          ).toList();
+                                        }
+                                        setState(() {
+                                          _products = results;
+                                        });
+                                      }
+                                    });
+                                  },
+                                  onSubmitted: (String value) {},
+                                  decoration: InputDecoration(
+                                    hintText: 'Search',
+                                    hintStyle: Theme.of(context)
+                                        .textTheme
+                                        .titleLarge!
+                                        .copyWith(
+                                          fontSize: 17,
+                                        ),
+                                    filled: true,
+                                    fillColor:
+                                        const Color.fromARGB(255, 216, 216, 216)
+                                            .withOpacity(0.1),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide.none,
+                                    ),
+                                    prefixIcon: Icon(
+                                      Icons.search,
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge!
+                                          .color,
+                                    ),
                                   ),
-                              filled: true,
-                              fillColor:
-                                  const Color.fromARGB(255, 216, 216, 216)
-                                      .withOpacity(0.1),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: BorderSide.none,
-                              ),
-                              prefixIcon: Icon(
-                                Icons.search,
-                                color: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge!
-                                    .color,
+                                ),
                               ),
                             ),
-                          ),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 10),
+                              child: IconButton(
+                                onPressed: () async {
+                                  Navigator.pushNamed(
+                                    context,
+                                    CartScreen.routeName,
+                                  );
+                                },
+                                icon: const Icon(
+                                  FontAwesomeIcons.cartPlus,
+                                  size: 20,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 6),
                         Expanded(
@@ -134,9 +160,16 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               itemBuilder: (BuildContext context, int index) {
                                 return GestureDetector(
-                                  onTap: () {},
+                                  onTap: () async {
+                                    await Navigator.pushNamed(
+                                      context,
+                                      ProductDetailScreen.routeName,
+                                      arguments: {'id': _products[index].id},
+                                    );
+                                  },
                                   child: ProductTile(
-                                      product: state.products[index]),
+                                    product: state.products[index],
+                                  ),
                                 );
                               },
                             ),
@@ -146,10 +179,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   );
                 } else {
-                  return const Center(
-                    child: CircularProgressIndicator(
-                      color: Colors.blue,
-                    ),
+                  return Center(
+                    child: Lottie.asset('assets/loading.json'),
                   );
                 }
               },

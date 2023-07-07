@@ -45,7 +45,7 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   @override
   Future<ProductModel> getProductDetail(int id) async {
     try {
-      final Uri uri = Uri.parse('https://fakestoreapi.com/products');
+      final Uri uri = Uri.parse('https://fakestoreapi.com/products/$id');
       Response response = await client.get(
         uri,
         headers: <String, String>{
