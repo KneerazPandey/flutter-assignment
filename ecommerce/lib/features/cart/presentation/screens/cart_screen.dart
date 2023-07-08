@@ -17,6 +17,8 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
+  double totalPrice = 0;
+
   @override
   void initState() {
     BlocProvider.of<CartBloc>(context).add(
@@ -58,6 +60,9 @@ class _CartScreenState extends State<CartScreen> {
             BlocProvider.of<CartBloc>(context).add(
               GetAllCartEvent(),
             );
+            setState(() {
+              totalPrice = 0;
+            });
           }
           if (state is CartFailureState) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -80,150 +85,220 @@ class _CartScreenState extends State<CartScreen> {
             BlocProvider.of<CartBloc>(context).add(
               GetAllCartEvent(),
             );
+            setState(() {
+              totalPrice = 0;
+            });
           }
           if (state is SuccessfullyIncreasedCartProductItemState) {
             BlocProvider.of<CartBloc>(context).add(
               GetAllCartEvent(),
             );
+            setState(() {
+              totalPrice = 0;
+            });
           }
         },
         child: BlocBuilder<CartBloc, CartState>(
           builder: (context, state) {
             if (state is SuccessfullyObtainAllCartState) {
+              for (var cart in state.carts) {
+                totalPrice += (cart.count * cart.product.price);
+              }
               if (state.carts.isNotEmpty) {
                 return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 22),
-                  child: ListView.builder(
-                    itemCount: state.carts.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      CartEntity cart = state.carts[index];
-                      return Padding(
-                        padding: const EdgeInsets.only(
-                          top: 20,
-                          bottom: 30,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              width: 120,
-                              height: 120,
-                              child: Image.network(
-                                cart.product.image,
-                                fit: BoxFit.contain,
+                  padding: const EdgeInsets.symmetric(horizontal: 18),
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: state.carts.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            CartEntity cart = state.carts[index];
+                            return Padding(
+                              padding: const EdgeInsets.only(
+                                top: 20,
+                                bottom: 30,
                               ),
-                            ),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
+                              child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Container(
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                      cart.product.title,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium!
-                                          .copyWith(
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                                  SizedBox(
+                                    width: 120,
+                                    height: 130,
+                                    child: Image.network(
+                                      cart.product.image,
+                                      fit: BoxFit.contain,
                                     ),
                                   ),
-                                  Text(
-                                    '\$${cart.product.price.toString()}',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium!
-                                        .copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.blueAccent,
-                                          fontSize: 22,
+                                  const SizedBox(width: 7),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          cart.product.title,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium!
+                                              .copyWith(
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                         ),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: Container(
-                                          color: Colors.grey.withOpacity(0.1),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              IconButton(
-                                                onPressed: () {
-                                                  BlocProvider.of<CartBloc>(
-                                                          context)
-                                                      .add(
-                                                    IncreaseCartProductItemEvent(
-                                                      cart.product.id,
-                                                    ),
-                                                  );
-                                                },
-                                                icon: const Icon(
-                                                  FontAwesomeIcons.plus,
-                                                  size: 20,
+                                        Container(
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            '\$${cart.product.price.toString()}',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium!
+                                                .copyWith(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.blueAccent,
+                                                  fontSize: 16,
                                                 ),
-                                              ),
-                                              Text(
-                                                cart.count.toString(),
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodyMedium!
-                                                    .copyWith(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: Colors.green,
-                                                      fontSize: 22,
-                                                    ),
-                                              ),
-                                              IconButton(
-                                                onPressed: () {
-                                                  if (cart.count >= 1) {
-                                                    BlocProvider.of<CartBloc>(
-                                                            context)
-                                                        .add(
-                                                      DecreaseCartProductItemEvent(
-                                                        cart.product.id,
-                                                      ),
-                                                    );
-                                                  }
-                                                },
-                                                icon: const Icon(
-                                                  FontAwesomeIcons.minus,
-                                                  size: 20,
-                                                ),
-                                              ),
-                                            ],
                                           ),
                                         ),
-                                      ),
-                                      const SizedBox(width: 20),
-                                      IconButton(
-                                        onPressed: () async {
-                                          BlocProvider.of<CartBloc>(context)
-                                              .add(
-                                            RemoveCartProductEvent(
-                                              cart.product.id,
-                                            ),
-                                          );
-                                        },
-                                        icon: const Icon(
-                                          FontAwesomeIcons.xmark,
-                                          color: Colors.red,
+                                        const SizedBox(height: 5),
+                                        Container(
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            'Total: \$${cart.product.price * cart.count}',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium!
+                                                .copyWith(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.blueAccent,
+                                                  fontSize: 17,
+                                                ),
+                                          ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
+                                        const SizedBox(height: 10),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Container(
+                                                color: Colors.grey
+                                                    .withOpacity(0.1),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceEvenly,
+                                                  children: [
+                                                    IconButton(
+                                                      onPressed: () {
+                                                        BlocProvider.of<
+                                                                    CartBloc>(
+                                                                context)
+                                                            .add(
+                                                          IncreaseCartProductItemEvent(
+                                                            cart.product.id,
+                                                          ),
+                                                        );
+                                                      },
+                                                      icon: const Icon(
+                                                        FontAwesomeIcons.plus,
+                                                        size: 20,
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      cart.count.toString(),
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .bodyMedium!
+                                                          .copyWith(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            color: Colors.green,
+                                                            fontSize: 22,
+                                                          ),
+                                                    ),
+                                                    IconButton(
+                                                      onPressed: () {
+                                                        if (cart.count >= 1) {
+                                                          BlocProvider.of<
+                                                                      CartBloc>(
+                                                                  context)
+                                                              .add(
+                                                            DecreaseCartProductItemEvent(
+                                                              cart.product.id,
+                                                            ),
+                                                          );
+                                                        }
+                                                      },
+                                                      icon: const Icon(
+                                                        FontAwesomeIcons.minus,
+                                                        size: 20,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(width: 20),
+                                            IconButton(
+                                              onPressed: () async {
+                                                BlocProvider.of<CartBloc>(
+                                                        context)
+                                                    .add(
+                                                  RemoveCartProductEvent(
+                                                    cart.product.id,
+                                                  ),
+                                                );
+                                              },
+                                              icon: const Icon(
+                                                FontAwesomeIcons.xmark,
+                                                color: Colors.red,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  )
                                 ],
                               ),
-                            )
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Total',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                  ),
+                            ),
+                            Text(
+                              '\$ ${totalPrice.toStringAsFixed(2)}',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                  ),
+                            ),
                           ],
                         ),
-                      );
-                    },
+                      ),
+                      const SizedBox(height: 28),
+                    ],
                   ),
                 );
               } else {
