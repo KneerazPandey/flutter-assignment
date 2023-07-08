@@ -2,8 +2,9 @@
 
 ## You can download the latest version of the app for Android by clicking the link below:
 
-- [Download Android APK](./ecommerce/build/app/outputs/apk/release/app-x86_64-release.apk)
-- [Download for IOS](./ecommerce/build/app/outputs/apk/release/app-arm64-v8a-release.apk)
+- [Download Android APK](https://drive.google.com/file/d/1EliD8IHpH1plbEW3i-YL44eZbQj67cQc/view?usp=sharing)
+
+- [Download for IOS](https://drive.google.com/file/d/1_um-ZvczLemwWaS7UOpO18lqZq2ELbd-/view?usp=sharing)
 
 # The Screenshots of mobile app:-
 
